@@ -105,6 +105,18 @@ void generatePreFilledNumbers(vector<vector<int>>& board, int numPrefilled) {
     }
 }
 
+// Function to check if the player has won
+bool checkWin(const vector<vector<int>>& board, const vector<vector<int>>& solvedBoard) {
+    for (int i = 0; i < SIZE; ++i) {
+        for (int j = 0; j < SIZE; ++j) {
+            if (board[i][j] != solvedBoard[i][j]) {
+                return false; // If any cell is different, player hasn't won
+            }
+        }
+    }
+    return true; // All cells are the same, player has won
+}
+
 int main() {
     vector<vector<int>> board(SIZE, vector<int>(SIZE, EMPTY));
     vector<vector<bool>> prefilled(SIZE, vector<bool>(SIZE, false));
@@ -150,6 +162,12 @@ int main() {
             board[cursorRow][cursorCol] = solvedBoard[cursorRow][cursorCol];
             prefilled[cursorRow][cursorCol] = true; // Mark as autofilled
         } else if (input == 'q') {
+            break;
+        }
+
+        // Check if the player has won
+        if (checkWin(board, solvedBoard)) {
+            cout << "Congratulations! You won!" << endl;
             break;
         }
     }
