@@ -8,7 +8,9 @@ using namespace std;
 const int SIZE = 9;
 const int EMPTY = 0;
 
-void printBoard(const vector<vector<int>>& board, const vector<vector<bool>>& prefilled, int cursorRow, int cursorCol, const vector<vector<int>>& solvedBoard) {
+void printBoard(const vector<vector<int>>& board, const vector<vector<bool>>& prefilled,
+                int cursorRow, int cursorCol, const vector<vector<int>>& solvedBoard,
+                bool isEndGame = false) {
     for (int i = 0; i < SIZE; ++i) {
         if (i % 3 == 0 && i != 0)
             cout << "---------------------" << endl;
@@ -24,7 +26,7 @@ void printBoard(const vector<vector<int>>& board, const vector<vector<bool>>& pr
                 else
                     cout << "\033[32m" << board[i][j] << "\033[0m "; // Green
             } else {
-                if (i == cursorRow && j == cursorCol)
+                if (i == cursorRow && j == cursorCol && !isEndGame)
                     cout << "\033[36m[" << board[i][j] << "]\033[0m "; // Cyan with bold for cursor
                 else
                     cout << "\033[33m" << board[i][j] << "\033[0m "; // Yellow
@@ -105,16 +107,34 @@ void generatePreFilledNumbers(vector<vector<int>>& board, int numPrefilled) {
     }
 }
 
-// Function to check if the player has won
-bool checkWin(const vector<vector<int>>& board, const vector<vector<int>>& solvedBoard) {
-    for (int i = 0; i < SIZE; ++i) {
-        for (int j = 0; j < SIZE; ++j) {
-            if (board[i][j] != solvedBoard[i][j]) {
-                return false; // If any cell is different, player hasn't won
+bool checkWin(const vector<vector<int>>& board) {
+    // Check each row
+    for (int row = 0; row < SIZE; ++row) {
+        for (int num = 1; num <= SIZE; ++num) {
+            if (!isNumberInRow(board, row, num))
+                return false; // Missing number in this row
+        }
+    }
+
+    // Check each column
+    for (int col = 0; col < SIZE; ++col) {
+        for (int num = 1; num <= SIZE; ++num) {
+            if (!isNumberInColumn(board, col, num))
+                return false; // Missing number in this column
+        }
+    }
+
+    // Check each 3x3 box
+    for (int startRow = 0; startRow < SIZE; startRow += 3) {
+        for (int startCol = 0; startCol < SIZE; startCol += 3) {
+            for (int num = 1; num <= SIZE; ++num) {
+                if (!isNumberInBox(board, startRow, startCol, num))
+                    return false; // Missing number in this box
             }
         }
     }
-    return true; // All cells are the same, player has won
+
+    return true; // Board is valid according to Sudoku rules
 }
 
 int main() {
@@ -166,7 +186,9 @@ int main() {
         }
 
         // Check if the player has won
-        if (checkWin(board, solvedBoard)) {
+        if (checkWin(board)) {
+            system("cls");
+            printBoard(board, prefilled, cursorRow, cursorCol, solvedBoard, true);
             cout << "Congratulations! You won!" << endl;
             break;
         }
