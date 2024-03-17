@@ -15,7 +15,10 @@ class SudokuBoard {
         vector<vector<bool>> prefilled;
 
     public:
-        SudokuBoard() : board(SIZE, vector<int>(SIZE, EMPTY)), prefilled(SIZE, vector<bool>(SIZE, false)) {}
+        void initializeBoard(const vector<vector<int>>& initboard, const vector<vector<bool>>& initprefilledboard){
+            board = initboard;
+            prefilled = initprefilledboard;
+        }
 
         void setCellValue(int row, int col, int value) {
             board[row][col] = value;
@@ -78,5 +81,37 @@ class SudokuBoard {
                 }
             }
             return false;
+        }
+
+        bool isEveryRowComplete() const {
+            for (int row = 0; row < SIZE; ++row) {
+                for (int num = 1; num <= SIZE; ++num) {
+                    if (!isNumberInRow(row, num))
+                        return false; // Missing number in this row
+                }
+            }
+            return true;
+        }
+
+        bool isEveryColumnComplete() const {
+            for (int col = 0; col < SIZE; ++col) {
+                for (int num = 1; num <= SIZE; ++num) {
+                    if (!isNumberInColumn(col, num))
+                        return false; // Missing number in this column
+                }
+            }
+            return true;
+        }
+
+        bool isEveryBoxComplete() const {
+            for (int startRow = 0; startRow < SIZE; startRow += 3) {
+                for (int startCol = 0; startCol < SIZE; startCol += 3) {
+                    for (int num = 1; num <= SIZE; ++num) {
+                        if (!isNumberInBox(startRow, startCol, num))
+                            return false; // Missing number in this box
+                    }
+                }
+            }
+            return true;
         }
 };

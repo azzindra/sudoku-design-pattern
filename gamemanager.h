@@ -4,41 +4,9 @@
 #include <vector>
 #include <conio.h>
 #include "board.h"
+#include "boardmanager.h"
 
 using namespace std;
-
-class SudokuSolver {
-    public:
-        static bool solve(SudokuBoard& board);
-    private:
-        static bool solveRecursive(SudokuBoard& board, int row, int col);
-    };
-
-    bool SudokuSolver::solve(SudokuBoard& board) {
-        return solveRecursive(board, 0, 0);
-}
-
-bool SudokuSolver::solveRecursive(SudokuBoard& board, int row, int col) {
-    if (row == SIZE) {
-        row = 0;
-        if (++col == SIZE)
-            return true; // Entire board has been filled successfully
-    }
-
-    if (board.isPrefilled(row, col))
-        return solveRecursive(board, row + 1, col);
-
-    for (int num = 1; num <= SIZE; ++num) {
-        if (board.isSafe(row, col, num)) {
-            board.setCellValue(row, col, num);
-            if (solveRecursive(board, row + 1, col))
-                return true;
-        }
-    }
-
-    board.setCellValue(row, col, EMPTY); // Backtrack
-    return false;
-}
 
 class SudokuGame {
     private:
@@ -50,14 +18,13 @@ class SudokuGame {
     public:
         SudokuGame() : cursorRow(0), cursorCol(0) {}
 
-        void initialize(int numPrefilled) {
+        void initialize(SudokuBoardManager boardmanager, int numPrefilled) {
+            board = boardmanager.createNewBoard();
             board.generatePreFilledNumbers(numPrefilled);
-            solvedBoard = board;
-            SudokuSolver::solve(solvedBoard);
+            solvedBoard = boardmanager.solveBoard(board);
         }
 
-        void print(bool isEndGame = false) const {
-            system("cls");
+        void printBoard(bool isEndGame = false) const {
             for (int i = 0; i < SIZE; ++i) {
                 if (i % 3 == 0 && i != 0)
                     cout << "---------------------" << endl;
@@ -87,30 +54,12 @@ class SudokuGame {
         }
 
         bool checkWin() const {
-            for (int row = 0; row < SIZE; ++row) {
-                for (int num = 1; num <= SIZE; ++num) {
-                    if (!board.isNumberInRow(row, num))
-                        return false; // Missing number in this row
-                }
+            if (    board.isEveryRowComplete()
+                    and board.isEveryColumnComplete()
+                    and board.isEveryBoxComplete()  ) { 
+                return true;
             }
-
-            for (int col = 0; col < SIZE; ++col) {
-                for (int num = 1; num <= SIZE; ++num) {
-                    if (!board.isNumberInColumn(col, num))
-                        return false; // Missing number in this column
-                }
-            }
-
-            for (int startRow = 0; startRow < SIZE; startRow += 3) {
-                for (int startCol = 0; startCol < SIZE; startCol += 3) {
-                    for (int num = 1; num <= SIZE; ++num) {
-                        if (!board.isNumberInBox(startRow, startCol, num))
-                            return false; // Missing number in this box
-                    }
-                }
-            }
-
-            return true; // Board is valid according to Sudoku rules
+            return false;
         }
 
         void moveCursor(char input) {
@@ -128,10 +77,14 @@ class SudokuGame {
         void play(const string& playerName) {
             char input;
 
-            cout << "Use WASD keys to move the cursor. Enter a number to fill the selected box. Press 'h' to autofill a square." << endl;
+            
+            // input = _getch();
 
             while (true) {
-                print();
+                system("cls");
+                cout << "Use WASD keys to move the cursor. Enter a number to fill the selected box." << endl;
+                cout << "Press 'h' to autofill a square. Press 'q' to quit the game." << endl << endl;
+                printBoard();
                 input = _getch();
                 if (input >= '1' && input <= '9' && !board.isPrefilled(cursorRow, cursorCol)) {
                     board.setCellValue(cursorRow, cursorCol, input - '0');
@@ -145,7 +98,7 @@ class SudokuGame {
                 moveCursor(input);
 
                 if (checkWin()) {
-                    print(true);
+                    printBoard(true);
                     cout << "Congratulations, " << playerName << "! You won!" << endl;
                     break;
                 }
