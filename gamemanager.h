@@ -19,9 +19,11 @@ class SudokuGame {
         SudokuGame() : cursorRow(0), cursorCol(0) {}
 
         void initialize(SudokuBoardManager boardmanager, int numPrefilled) {
-            board = boardmanager.createNewBoard();
-            board.generatePreFilledNumbers(numPrefilled);
+            // board = boardmanager.createNewBoard();
+            board = boardmanager.importBoardFromRandomFile("Easy");
+            // board.generatePreFilledNumbers(numPrefilled);
             solvedBoard = boardmanager.solveBoard(board);
+            // boardmanager.exportBoardToFile(board, "template1");
         }
 
         void printBoard(bool isEndGame = false) const {
