@@ -79,21 +79,26 @@ public:
 		}
 
 		// Parse the content to reconstruct the Sudoku board
-		vector<vector<int>> initBoard(SIZE, vector<int>(SIZE));
+		vector<vector<int>> initBoard(SIZE, vector<int>(SIZE)); // to store temporary values
+        vector<vector<bool>> initPrefilledBoard(SIZE, vector<bool>(SIZE, false)); // Assume no cells are prefilled initially
+        SudokuBoard newBoard;
+        newBoard.initializeBoard(initBoard, initPrefilledBoard);
+
 		for (int row = 0; row < SIZE; ++row) {
 			for (int col = 0; col < SIZE; ++col) {
-				if (!(file >> initBoard[row][col])) {
+				if (!(file >> initBoard[row][col])) { // fails
 					cerr << "Error reading file: " << filePath << endl;
 					exit(1);
-				}
-			}
-		}
+				} else { // succeed
+                    newBoard.setCellValue(row, col, initBoard[row][col]);
+                    if (newBoard.getCellValue(row, col) != EMPTY) {
+                        newBoard.markPrefilled(row, col); // Mark prefilled cells
+                }
+                }
+            }
+        }
 		file.close();
 
-		// Create a new SudokuBoard and initialize it with the parsed board
-		SudokuBoard newBoard;
-		vector<vector<bool>> initPrefilledBoard(SIZE, vector<bool>(SIZE, true)); // Assume all cells are prefilled from file
-		newBoard.initializeBoard(initBoard, initPrefilledBoard);
 		return newBoard;
 	}
 
