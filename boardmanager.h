@@ -22,7 +22,7 @@ public:
         return newboard;
     }
 
-    SudokuBoard solveBoard(SudokuBoard boardToSolve) {
+    SudokuBoard solveBoard(SudokuBoard& boardToSolve) {
         solveRecursive(boardToSolve, 0, 0);
         return boardToSolve;
     }

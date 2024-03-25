@@ -9,7 +9,7 @@ int main() {
     SudokuPlayer player;
     SudokuBoardManager boardmanager;
     game.initialize(boardmanager, player.getNumPrefilled());
-    game.play(player.getName());
+    // game.play(player.getName());
 
     return 0;
 }

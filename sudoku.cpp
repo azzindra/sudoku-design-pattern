@@ -78,6 +78,23 @@ class SudokuBoard {
             }
             return false;
         }
+
+        void printCurrentBoard(){
+            for (int i = 0; i < SIZE; ++i) {
+                if (i % 3 == 0 && i != 0)
+                    cout << "---------------------" << endl;
+
+                for (int j = 0; j < SIZE; ++j) {
+                    if (j % 3 == 0 && j != 0)
+                        cout << "| ";
+
+                    int cellValue = getCellValue(i, j);
+
+                    cout << "\033[32m" << cellValue << "\033[0m ";
+                }
+                cout << endl;
+            }
+        }
 };
 
 class SudokuSolver {
@@ -127,6 +144,9 @@ class SudokuGame {
             board.generatePreFilledNumbers(numPrefilled);
             solvedBoard = board;
             SudokuSolver::solve(solvedBoard);
+            board.printCurrentBoard();
+            cout << endl;
+            solvedBoard.printCurrentBoard();
         }
 
         void print(bool isEndGame = false) const {
@@ -252,7 +272,7 @@ int main() {
     SudokuGame game;
     SudokuPlayer player;
     game.initialize(player.getNumPrefilled());
-    game.play(player.getName());
+    // game.play(player.getName());
 
     return 0;
 }

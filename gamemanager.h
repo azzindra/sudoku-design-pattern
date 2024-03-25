@@ -22,8 +22,12 @@ class SudokuGame {
             // board = boardmanager.createNewBoard();
             board = boardmanager.importBoardFromRandomFile("Easy");
             // board.generatePreFilledNumbers(numPrefilled);
-            solvedBoard = boardmanager.solveBoard(board);
+            solvedBoard = board;
+            solvedBoard = boardmanager.solveBoard(solvedBoard);
             // boardmanager.exportBoardToFile(board, "template1");
+            board.printCurrentBoard();
+            cout << endl;
+            solvedBoard.printCurrentBoard();
         }
 
         void printBoard(bool isEndGame = false) const {

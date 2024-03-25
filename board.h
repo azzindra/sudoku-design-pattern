@@ -114,4 +114,21 @@ class SudokuBoard {
             }
             return true;
         }
+
+        void printCurrentBoard(){
+            for (int i = 0; i < SIZE; ++i) {
+                if (i % 3 == 0 && i != 0)
+                    cout << "---------------------" << endl;
+
+                for (int j = 0; j < SIZE; ++j) {
+                    if (j % 3 == 0 && j != 0)
+                        cout << "| ";
+
+                    int cellValue = getCellValue(i, j);
+
+                    cout << "\033[32m" << cellValue << "\033[0m ";
+                }
+                cout << endl;
+            }
+        }
 };
